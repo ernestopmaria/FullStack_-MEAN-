@@ -1,7 +1,7 @@
 import {
   NextFunction, Request, response, Response,
 } from 'express';
-import { now } from 'mongoose';
+import { Types } from 'mongoose';
 import User from '../schemas/User';
 import Controller from './Controller';
 
@@ -18,7 +18,10 @@ export default class UserController extends Controller {
   }
   protected initRoutes(): void {
     this.router.get(this.path, this.list);
+    this.router.get(`${this.path}/:id`, this.findById);
     this.router.post(this.path, this.create);
+    this.router.post(`${this.path}/:id`, this.update);
+    this.router.delete(`${this.path}/:id`, this.delete);
   }
 
   private async list(req:Request, res:Response, next:NextFunction):Promise<Response> {
@@ -28,20 +31,53 @@ export default class UserController extends Controller {
 
   private async findById(req:Request, res:Response, next:NextFunction):Promise<Response> {
     const { id } = req.params;
-    return null;
+    if (!Types.ObjectId.isValid(id)) {
+      return res.status(400).send('Algo deu errado');
+    }
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(401).send('Usuario não encontrado');
+    }
+    return res.send(user);
   }
 
   private async create(req:Request, res:Response, next:NextFunction):Promise<Response> {
-    const { name, email, password } = req.body;
+    try {
+      const user = await User.create(req.body);
+      return res.status(200).send(user);
+    } catch (err) {
+      console.error('Something went wrong');
+      console.error(err);
+    }
+    return res.status(200).send();
+  }
 
-    const user = {
-      name,
-      email,
-      password,
+  private async update(req:Request, res:Response, next:NextFunction):Promise<Response> {
+    try {
+      const { id } = req.params;
+      if (!Types.ObjectId.isValid(id)) {
+        return res.status(400).send('Algo deu errado');
+      }
+      await User.findByIdAndUpdate(id, req.body);
+      return res.send('User Updated');
+    } catch (err) {
+      console.error('Something went wrong');
+      console.error(err);
+    }
+    return res.status(200).send();
+  }
 
-    }as IUser;
-    User.create(user);
+  private async delete(req:Request, res:Response, next:NextFunction):Promise<Response> {
+    const { id } = req.params;
+    if (!Types.ObjectId.isValid(id)) {
+      return res.status(400).send('Algo deu errado');
+    }
+    const user = await User.findById(id);
+    if (user) {
+      await user.deleteOne();
+      return res.send('User deleted');
+    }
 
-    return response.status(200).send();
+    return res.status(204).send();
   }
 }
