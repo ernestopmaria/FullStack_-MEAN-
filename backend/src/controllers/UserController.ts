@@ -1,8 +1,10 @@
-import e, {
-  NextFunction, Request, response, Response,
+/* eslint-disable eqeqeq */
+import {
+  NextFunction, Request, Response,
 } from 'express';
 import { Types } from 'mongoose';
 import User from '../schemas/User';
+import ValidationServices from '../services/ValidationServices';
 import Controller from './Controller';
 
 export default class UserController extends Controller {
@@ -24,7 +26,7 @@ export default class UserController extends Controller {
 
   private async findById(req:Request, res:Response, next:NextFunction):Promise<Response> {
     const { id } = req.params;
-    if (!Types.ObjectId.isValid(id)) {
+    if (ValidationServices.validateId(id)) {
       return res.status(400).send('Algo deu errado');
     }
     const user = await User.findById(id);
@@ -36,20 +38,16 @@ export default class UserController extends Controller {
 
   private async create(req:Request, res:Response, next:NextFunction):Promise<Response> {
     try {
-      const {email} =req.body
-       const CheckUser = await User.find();
-        CheckUser.find(x =>{        
-        if(x.email==email){
-          return res.status(401).send("User already")
-          
-        }    
-      
+      const { email } = req.body;
+      const CheckUser = await User.find();
+      // eslint-disable-next-line array-callback-return
+      CheckUser.find((x) => {
+        if (x.email == email) {
+          return res.status(401).send('User already');
+        }
       });
 
-      await User.create(req.body)
-      
-
-     
+      await User.create(req.body);
     } catch (err) {
       console.error('Something went wrong');
       console.error(err);
@@ -60,14 +58,14 @@ export default class UserController extends Controller {
   private async update(req:Request, res:Response, next:NextFunction):Promise<Response> {
     try {
       const { id } = req.params;
-      if (!Types.ObjectId.isValid(id)) {
+      if (ValidationServices.validateId(id)) {
         return res.status(400).send('Algo deu errado');
       }
-      const userExists  = await User.findById(id);
+      const userExists = await User.findById(id);
       if (!userExists) {
         return res.status(401).send('Usuario não encontrado');
       }
-      
+
       await User.findByIdAndUpdate(id, req.body);
       return res.send('User Updated');
     } catch (err) {
@@ -78,16 +76,23 @@ export default class UserController extends Controller {
   }
 
   private async delete(req:Request, res:Response, next:NextFunction):Promise<Response> {
-    const { id } = req.params;
-    if (!Types.ObjectId.isValid(id)) {
-      return res.status(400).send('Algo deu errado');
-    }
-    const user = await User.findById(id);
-    if (user) {
-      await user.deleteOne();
-      return res.send('User deleted');
+    try {
+      const { id } = req.params;
+
+      if (ValidationServices.validateId(id)) {
+        return res.status(400).send('Algo deu errado');
+      }
+
+      const user = await User.findById(id);
+      if (user) {
+        await user.deleteOne();
+        return res.send('User deleted');
+      }
+    } catch (err) {
+      console.error('Something went wrong');
+      console.error(err);
     }
 
-    return res.status(204).send();
+    return res.status(401).send('User not found');
   }
 }
