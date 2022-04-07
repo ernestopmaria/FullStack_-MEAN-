@@ -1,16 +1,9 @@
-import {
+import e, {
   NextFunction, Request, response, Response,
 } from 'express';
 import { Types } from 'mongoose';
 import User from '../schemas/User';
 import Controller from './Controller';
-
-interface IUser{
-    name:string;
-    email:string;
-    password:string;
-    creation:Date;
-}
 
 export default class UserController extends Controller {
   constructor() {
@@ -20,7 +13,7 @@ export default class UserController extends Controller {
     this.router.get(this.path, this.list);
     this.router.get(`${this.path}/:id`, this.findById);
     this.router.post(this.path, this.create);
-    this.router.post(`${this.path}/:id`, this.update);
+    this.router.put(`${this.path}/:id`, this.update);
     this.router.delete(`${this.path}/:id`, this.delete);
   }
 
@@ -43,8 +36,20 @@ export default class UserController extends Controller {
 
   private async create(req:Request, res:Response, next:NextFunction):Promise<Response> {
     try {
-      const user = await User.create(req.body);
-      return res.status(200).send(user);
+      const {email} =req.body
+       const CheckUser = await User.find();
+        CheckUser.find(x =>{        
+        if(x.email==email){
+          return res.status(401).send("User already")
+          
+        }    
+      
+      });
+
+      await User.create(req.body)
+      
+
+     
     } catch (err) {
       console.error('Something went wrong');
       console.error(err);
@@ -58,6 +63,11 @@ export default class UserController extends Controller {
       if (!Types.ObjectId.isValid(id)) {
         return res.status(400).send('Algo deu errado');
       }
+      const userExists  = await User.findById(id);
+      if (!userExists) {
+        return res.status(401).send('Usuario não encontrado');
+      }
+      
       await User.findByIdAndUpdate(id, req.body);
       return res.send('User Updated');
     } catch (err) {
