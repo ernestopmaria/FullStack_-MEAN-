@@ -4,7 +4,11 @@ import {
 } from 'express';
 import HttpException from '../errors/HttpException';
 import IdInvalidException from '../errors/IdInvalidException';
+import NoContentException from '../errors/NoContentException';
+import ServerErrorException from '../errors/ServerErrorException';
 import HttpStatusCode from '../responses/HttpStatusCode';
+import responseCreate from '../responses/ResponseCreate';
+import responseOk from '../responses/ResponseOk';
 import User from '../schemas/User';
 import ValidationServices from '../services/ValidationServices';
 import Controller from './Controller';
@@ -24,9 +28,9 @@ export default class UserController extends Controller {
   private async list(req:Request, res:Response, next:NextFunction):Promise<Response> {
     try {
       const users = await User.find();
-      return res.send(users);
+      return res.send(responseOk(res, users));
     } catch (error) {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, 'Erro interno no servidor'));
+      return res.send(new ServerErrorException(error));
     }
   }
 
@@ -34,15 +38,15 @@ export default class UserController extends Controller {
     try {
       const { id } = req.params;
       if (ValidationServices.validateId(id)) {
-        return res.status(HttpStatusCode.BAD_REQUEST).send(new HttpException(HttpStatusCode.BAD_REQUEST, 'Usuario não existe!'));
+        return res.status(HttpStatusCode.BAD_REQUEST).send(new IdInvalidException());
       }
       const user = await User.findById(id);
       if (!user) {
         return res.status(HttpStatusCode.NOT_FOUND).send(new HttpException(HttpStatusCode.NOT_FOUND, 'Usuario não encontrado!'));
       }
-      return res.send(user);
-    } catch (error) {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, 'Erro interno no servidor'));
+      return res.send(responseOk(res, user));
+    } catch (err) {
+      return res.send(new ServerErrorException(err));
     }
   }
 
@@ -64,9 +68,10 @@ export default class UserController extends Controller {
       });
 
       const user = await User.create(req.body);
-      return res.status(HttpStatusCode.CREATED).send(new HttpException(HttpStatusCode.CREATED, 'Usuario criado com sucesso!')).json(user);
+
+      return res.send(responseCreate(res, user));
     } catch (error) {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, 'Erro interno no servidor'));
+      return res.send(new ServerErrorException(error));
     }
   }
 
@@ -74,7 +79,7 @@ export default class UserController extends Controller {
     try {
       const { id } = req.params;
       if (ValidationServices.validateId(id)) {
-        return res.status(HttpStatusCode.BAD_REQUEST).send(new HttpException(HttpStatusCode.BAD_REQUEST, 'Usuario não valido!'));
+        return res.status(HttpStatusCode.BAD_REQUEST).send(new IdInvalidException());
       }
       const userExists = await User.findById(id);
       if (!userExists) {
@@ -82,9 +87,9 @@ export default class UserController extends Controller {
       }
 
       await User.findByIdAndUpdate(id, req.body);
-      return res.send(new HttpException(HttpStatusCode.OK, 'Usuario editado com sucesso!'));
+      return res.send(responseOk(res, userExists));
     } catch (err) {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, 'Erro interno no servidor'));
+      return res.send(new ServerErrorException(err));
     }
   }
 
@@ -99,11 +104,11 @@ export default class UserController extends Controller {
       const user = await User.findById(id);
       if (user) {
         await user.deleteOne();
-        return res.send(new HttpException(HttpStatusCode.OK, 'Usuario foi deletado com sucesso!'));
+        return res.send(responseOk(res, user));
       }
-      return res.status(HttpStatusCode.NOT_FOUND).send(new HttpException(HttpStatusCode.NOT_FOUND, 'Usuario não encontrado!'));
+      return res.status(HttpStatusCode.NO_CONTENT).send(new NoContentException());
     } catch (err) {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, 'Erro interno no servidor'));
+      return res.send(new ServerErrorException(err));
     }
   }
 }

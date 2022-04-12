@@ -1,11 +1,12 @@
-class HttpException {
-    public readonly status:number
-    public readonly message:string
+class HttpException extends Error {
+  public status: number;
+  public message: string;
 
-    constructor(status:number, message:string) {
-      this.status = status;
-      this.message = message;
-    }
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+    this.message = message;
+  }
 }
 
 export default HttpException;
