@@ -24,6 +24,7 @@ const UserSchema = new Schema({
     type: String,
     required: [true, 'Senha obrigatoria'],
     select: false,
+    minlength: [6, 'senha deve ter no minimo 6 caracteres'],
   },
   creation: {
     type: Date,
