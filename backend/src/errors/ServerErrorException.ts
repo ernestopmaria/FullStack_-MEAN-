@@ -45,7 +45,17 @@ function getMessageKeyUnique(error: { keyPattern: any; }): string {
 
   const listFormatedErros: string[] = [];
   Object.keys(keyPattern).forEach((field) => {
-    listFormatedErros.push(`${field} deve ser único`);
+    switch (field) {
+      case 'name':
+        listFormatedErros.push('Nome deve ser único');
+        break;
+
+      case 'email':
+        listFormatedErros.push('Email deve ser único');
+        break;
+      default:
+        listFormatedErros.push(`${field} deve ser único`);
+    }
   });
 
   return listFormatedErros.join(' | ');

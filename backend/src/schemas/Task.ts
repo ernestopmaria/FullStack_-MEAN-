@@ -8,7 +8,7 @@ export enum StatusEnum{
 export interface TaskInterface extends Document{
     description:string;
     status:StatusEnum;
-    conclused:Date;
+    concluded:Date;
     responsible:string;
     creation: Date
 }

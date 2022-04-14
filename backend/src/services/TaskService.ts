@@ -25,7 +25,7 @@ class TaskService {
   }
 
   public checkStatusFinished(task:TaskInterface) {
-    if (StatusEnum.FINISHED === task.status) task.conclused = new Date();
+    if (StatusEnum.FINISHED === task.status) { task.concluded = new Date(); }
   }
 }
 

@@ -41,7 +41,7 @@ export default class TaskController extends Controller {
       if (ValidationServices.validateId(id, next)) {
         return;
       }
-      const task = await Task.findById(id);
+      const task = await Task.findById(id).populate('responsible');
       if (task) {
         return responseOk(res, task);
       }
@@ -55,6 +55,7 @@ export default class TaskController extends Controller {
     try {
       let task:TaskInterface = req.body;
       TaskService.checkStatusFinished(task);
+      UserService.userExists(task.responsible, next);
 
       task = await Task.create(task);
       const taskUpdate = await Task.findById(task.id).populate('responsible');
@@ -71,13 +72,14 @@ export default class TaskController extends Controller {
       if (ValidationServices.validateId(id, next)) {
         return;
       }
-      const task:TaskInterface = req.body;
+      let task:TaskInterface = req.body;
       TaskService.checkStatusFinished(task);
+      UserService.userExists(task.responsible, next);
 
-      const task1 = await Task.findByIdAndUpdate(id, task);
-      if (task1) {
-        const taskUpdated = Task.findById(task.id).populate('responsible');
-        return responseOk(res, taskUpdated);
+      task = await Task.findByIdAndUpdate(id, task) as TaskInterface;
+      if (task) {
+        task = await Task.findById(task.id).populate('responsible') as TaskInterface;
+        return responseOk(res, task);
       }
       next(new NoContentException());
     } catch (error) {
@@ -99,7 +101,7 @@ export default class TaskController extends Controller {
       const task = await Task.findById(id);
       if (task) {
         await task.deleteOne();
-        return responseOk(res, task);
+        return responseOk(res, 'Tarefa deletada com sucesso!');
       }
       next(new NoContentException());
     } catch (error) {
