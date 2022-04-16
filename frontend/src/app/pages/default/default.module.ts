@@ -4,6 +4,8 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import * as echarts from 'echarts';
 
 import { UserService } from 'app/services/user.service';
+import { TaskService } from 'app/services/task.service';
+import { DashService } from 'app/services/dash.service';
 import { ThemeModule } from '../../@theme/theme.module';
 import { DefaultComponent } from './default.component';
 
@@ -16,7 +18,7 @@ import { DefaultComponent } from './default.component';
   declarations: [
     DefaultComponent,
   ],
-  providers: [UserService],
+  providers: [UserService, TaskService, DashService],
 
 })
 export class DefaultdModule { }
