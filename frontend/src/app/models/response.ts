@@ -1,6 +1,6 @@
 import HttpStatusCode from './http-status-code';
 
-export interface Response<T>{
+export interface ResponseApp<T>{
   body:T;
   error :boolean;
   message:string;

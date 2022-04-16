@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { UserService } from 'app/services/user.service';
 
 @Component({
   selector: 'default',
@@ -6,5 +7,10 @@ import { Component } from '@angular/core';
   templateUrl: './default.component.html',
 })
 export class DefaultComponent {
-  constructor() {}
+  constructor(private userService:UserService) {
+    this.userService.list().subscribe((users) => {
+      console.log('users', users);
+    });
+    console.log('teste');
+  }
 }

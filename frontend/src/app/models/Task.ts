@@ -1,5 +1,5 @@
 import { Params } from '@angular/router';
-import { User } from './User';
+import { User } from './user';
 
 export enum StatusEnum{
     OPEN='OPEN',
