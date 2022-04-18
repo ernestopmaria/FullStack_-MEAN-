@@ -10,10 +10,13 @@ import { UserService } from 'app/services/user.service';
   templateUrl: './default.component.html',
 })
 export class DefaultComponent {
-  constructor(private userService:UserService, private taskService:TaskService, private dashService:DashService) {
-    this.userService.list().subscribe((users) => {
-      console.log('users:', users);
-    });
+  constructor(private userService:UserService,
+    private taskService:TaskService,
+    private dashService:DashService) {
+    this.userService.list()
+      .subscribe((users) => {
+        console.log('users:', users);
+      });
 
     this.taskService.list(TaskFilterEnum.OPENED).subscribe((tasks) => {
       console.log('tasks:', tasks);
