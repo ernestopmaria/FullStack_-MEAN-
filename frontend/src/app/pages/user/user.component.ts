@@ -117,10 +117,10 @@ export class UserComponent implements OnInit {
   }
 
   private findFormAdd() {
-    const usuario = this.formUser.value;
-    delete usuario._id;
+    const user = this.formUser.value;
+    delete user._id;
 
-    return usuario;
+    return user;
   }
 
   private editUser() {

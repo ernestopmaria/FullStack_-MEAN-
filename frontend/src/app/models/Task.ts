@@ -35,7 +35,7 @@ export enum TaskFilterEnum{
 
 export class TaskFilter {
     title:string;
-    link:'pages/task';
+    link='/pages/task/';
     queryParams:Params
 
     constructor(title:string, filter:TaskFilterEnum) {
