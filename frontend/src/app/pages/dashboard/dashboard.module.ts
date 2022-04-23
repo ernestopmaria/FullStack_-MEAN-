@@ -2,12 +2,9 @@ import { NgModule } from '@angular/core';
 import { NbCardModule } from '@nebular/theme';
 import { NgxEchartsModule } from 'ngx-echarts';
 import * as echarts from 'echarts';
-
-import { UserService } from 'app/services/user.service';
-import { TaskService } from 'app/services/task.service';
 import { DashService } from 'app/services/dash.service';
 import { ThemeModule } from '../../@theme/theme.module';
-import { DefaultComponent } from './default.component';
+import { DashboardComponent } from './dashboard.component';
 
 @NgModule({
   imports: [
@@ -16,9 +13,9 @@ import { DefaultComponent } from './default.component';
     NgxEchartsModule.forRoot({ echarts }),
   ],
   declarations: [
-    DefaultComponent,
+    DashboardComponent,
   ],
-  providers: [UserService, TaskService, DashService],
+  providers: [DashService],
 
 })
-export class DefaultdModule { }
+export class DashboardModule { }

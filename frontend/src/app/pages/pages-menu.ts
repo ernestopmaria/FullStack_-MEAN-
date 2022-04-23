@@ -9,7 +9,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
   {
     title: 'Dashboard',
     icon: 'home-outline',
-    link: '/pages/default',
+    link: '/pages/dash',
     home: true,
   }, {
     title: 'CADASTROS',

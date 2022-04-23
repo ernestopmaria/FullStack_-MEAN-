@@ -1,32 +1,32 @@
 import { Params } from '@angular/router';
 import { User } from './user';
 
-export enum StatusEnum{
-    OPEN='OPEN',
-    FINISHED='FINISHED'
+export enum StatusEnum {
+    OPEN = 'OPEN',
+    FINISHED = 'FINISHED'
 }
 
 export class Task {
-    _id:string;
-    description:string;
-    status:StatusEnum;
-    statusTranslate:string;
-    concluded:Date;
-    responsible:User;
-    responsibleName:string;
-    creation:Date
+    _id: string;
+    description: string;
+    status: StatusEnum;
+    statusTranslate: string;
+    concluded: Date;
+    responsible: User;
+    responsibleName: string;
+    creation: Date;
 
-    constructor(task:Task) {
+    constructor(task: Task) {
       this._id = task._id;
       this.description = task.description;
       this.responsibleName = task.responsible.name;
 
-      if (StatusEnum.OPEN === task.status) this.statusTranslate = 'Em Aberto';
+      if (StatusEnum.OPEN === task.status) this.statusTranslate = 'Em aberto';
       else this.statusTranslate = 'Finalizado';
     }
 }
 
-export enum TaskFilterEnum{
+export enum TaskFilterEnum {
     MY,
     OPENED,
     FINISHED,
@@ -34,12 +34,12 @@ export enum TaskFilterEnum{
 }
 
 export class TaskFilter {
-    title:string;
-    link='/pages/task/';
-    queryParams:Params
+  title: string;
+  link = '/pages/task/';
+  queryParams: Params;
 
-    constructor(title:string, filter:TaskFilterEnum) {
-      this.title = title;
-      this.queryParams = { filter };
-    }
+  constructor(title: string, filter: TaskFilterEnum) {
+    this.title = title;
+    this.queryParams = { filter };
+  }
 }
